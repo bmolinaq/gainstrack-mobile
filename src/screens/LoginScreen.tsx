@@ -3,13 +3,11 @@ import {
   View,
   Text,
   TextInput,
-  KeyboardAvoidingView,
+  ScrollView,
   TouchableOpacity,
   Modal,
   StyleSheet,
-  Platform,
-  TouchableWithoutFeedback,
-  Keyboard,
+  ImageBackground,
 } from "react-native";
 import { AntDesign, Ionicons } from "@expo/vector-icons";
 import { authService } from "../services/authService";
@@ -17,36 +15,57 @@ import useAuthStore from "../store/useAuthStore";
 import axios from "axios";
 import { APIGainstrackErrorResponse } from "../types/api.types";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
+import { BlurView } from "expo-blur";
 import { useAppTheme } from "../hooks/useAppTheme";
 import { ThemeColors } from "../theme";
 
 function getStyles(t: ThemeColors) {
   return StyleSheet.create({
     container: {
-      flex: 1,
+      flexGrow: 1,
       justifyContent: "center",
-      paddingHorizontal: 32,
-      gap: 16,
+      paddingHorizontal: 24,
+      paddingVertical: 24,
     },
     header: {
       alignItems: "center",
-      marginBottom: 20,
     },
     textTitle: {
-      color: t.textPrimary,
+      color: "#FFFFFF",
       fontFamily: "Inter-Bold",
       fontSize: 38,
       letterSpacing: 1.5,
+      textShadowColor: "rgba(0,0,0,0.4)",
+      textShadowOffset: { width: 0, height: 2 },
+      textShadowRadius: 6,
     },
     textSubtitle: {
-      color: t.textTertiary,
+      color: "rgba(255,255,255,0.8)",
       fontSize: 11,
       letterSpacing: 3,
       marginTop: 8,
+      textShadowColor: "rgba(0,0,0,0.3)",
+      textShadowOffset: { width: 0, height: 1 },
+      textShadowRadius: 4,
+    },
+    formCard: {
+      borderRadius: 28,
+      overflow: "hidden",
+      backgroundColor: "rgba(0,0,0,0.35)",
+      borderWidth: 1,
+      borderColor: "rgba(255,255,255,0.08)",
+    },
+    formCardInner: {
+      paddingHorizontal: 28,
+      paddingVertical: 36,
+      gap: 16,
+    },
+    formHeader: {
+      alignItems: "center",
+      marginBottom: 30,
     },
     card: {
-      backgroundColor: t.surface,
-      borderColor: t.surfaceBorder,
+      borderColor: "rgba(255,255,255,0.08)",
       borderWidth: 1,
       borderRadius: 18,
       overflow: "hidden",
@@ -163,107 +182,118 @@ export default function LoginScreen({ navigation }: any) {
   };
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <View style={{ flex: 1, backgroundColor: t.background }}>
-        <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
-          style={styles.container}
-        >
-          <View style={styles.header}>
-            <Text style={styles.textTitle}>GainsTrack</Text>
-            <Text style={styles.textSubtitle}>CONTROLA TU PROGRESO</Text>
-          </View>
+    <View style={{ flex: 1 }}>
+      <ImageBackground
+        source={require("../../assets/gainstrack-login.png")}
+        style={StyleSheet.absoluteFill}
+        resizeMode="cover"
+      />
+      <BlurView intensity={10} tint="dark" style={StyleSheet.absoluteFill} />
 
-          <View style={styles.card}>
-            <View style={styles.inputRow}>
-              <Ionicons
-                name="mail-outline"
-                size={18}
-                color={t.textTertiary}
-                style={styles.icon}
-              />
-              <TextInput
-                value={email}
-                onChangeText={(text) => {
-                  setEmail(text);
-                  setErrorMessage(null);
-                }}
-                placeholder="Correo electrónico"
-                placeholderTextColor={t.textTertiary}
-                style={styles.input}
-                keyboardType="email-address"
-                autoCapitalize="none"
-              />
+      <ScrollView
+        contentContainerStyle={styles.container}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+        automaticallyAdjustKeyboardInsets
+      >
+        <View style={styles.formCard}>
+          <View style={styles.formCardInner}>
+            <View style={styles.formHeader}>
+              <Text style={styles.textTitle}>GainsTrack</Text>
+              <Text style={styles.textSubtitle}>CONTROLA TU PROGRESO</Text>
             </View>
 
-            <View style={styles.divider} />
+            <BlurView intensity={50} tint="dark" style={styles.card}>
+              <View style={styles.inputRow}>
+                <Ionicons
+                  name="mail-outline"
+                  size={18}
+                  color={t.textTertiary}
+                  style={styles.icon}
+                />
+                <TextInput
+                  value={email}
+                  onChangeText={(text) => {
+                    setEmail(text);
+                    setErrorMessage(null);
+                  }}
+                  placeholder="Correo electrónico"
+                  placeholderTextColor={t.textTertiary}
+                  style={styles.input}
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                />
+              </View>
 
-            <View style={styles.inputRow}>
-              <Ionicons
-                name="lock-closed-outline"
-                size={18}
-                color={t.textTertiary}
-                style={styles.icon}
-              />
-              <TextInput
-                value={password}
-                onChangeText={(text) => {
-                  setPassword(text);
-                  setErrorMessage(null);
-                }}
-                placeholder="Contraseña"
-                placeholderTextColor={t.textTertiary}
-                secureTextEntry
-                style={styles.input}
-              />
-            </View>
-          </View>
+              <View style={styles.divider} />
 
-          {errorMessage !== null && (
-            <View style={styles.errorBanner}>
-              <Ionicons
-                name="alert-circle-outline"
-                size={18}
-                color={t.errorText}
-              />
-              <Text style={styles.errorText}>{errorMessage}</Text>
-            </View>
-          )}
+              <View style={styles.inputRow}>
+                <Ionicons
+                  name="lock-closed-outline"
+                  size={18}
+                  color={t.textTertiary}
+                  style={styles.icon}
+                />
+                <TextInput
+                  value={password}
+                  onChangeText={(text) => {
+                    setPassword(text);
+                    setErrorMessage(null);
+                  }}
+                  placeholder="Contraseña"
+                  placeholderTextColor={t.textTertiary}
+                  secureTextEntry
+                  style={styles.input}
+                />
+              </View>
+            </BlurView>
 
-          <TouchableOpacity
-            onPress={handleLogin}
-            disabled={isLoading}
-            style={styles.loginButton}
-            activeOpacity={0.7}
-          >
-            <Text style={styles.loginButtonText}>Iniciar sesión</Text>
-          </TouchableOpacity>
+            {errorMessage !== null && (
+              <View style={styles.errorBanner}>
+                <Ionicons
+                  name="alert-circle-outline"
+                  size={18}
+                  color={t.errorText}
+                />
+                <Text style={styles.errorText}>{errorMessage}</Text>
+              </View>
+            )}
 
-          <TouchableOpacity
-            onPress={() => navigation.navigate("Register")}
-            activeOpacity={0.6}
-          >
-            <Text style={styles.registerText}>
-              ¿No tienes cuenta? Regístrate
-            </Text>
-          </TouchableOpacity>
-
-          <View style={styles.socialContainer}>
-            <Text style={styles.socialLabel}>o continúa con</Text>
             <TouchableOpacity
-              onPress={handleGoogleLogin}
-              style={styles.googleButton}
-              activeOpacity={0.8}
+              onPress={handleLogin}
+              disabled={isLoading}
+              style={styles.loginButton}
+              activeOpacity={0.7}
             >
-              <AntDesign name="google" size={22} color="#EA4335" />
+              <Text style={styles.loginButtonText}>Iniciar sesión</Text>
             </TouchableOpacity>
-          </View>
-        </KeyboardAvoidingView>
 
-        <Modal visible={isLoading} transparent>
-          <LoadingSpinner />
-        </Modal>
-      </View>
-    </TouchableWithoutFeedback>
+            <TouchableOpacity
+              onPress={() => navigation.navigate("Register")}
+              activeOpacity={0.6}
+            >
+              <Text style={styles.registerText}>
+                ¿No tienes cuenta? Regístrate
+              </Text>
+            </TouchableOpacity>
+
+            <View style={styles.socialContainer}>
+              <Text style={styles.socialLabel}>o continúa con</Text>
+              <TouchableOpacity
+                onPress={handleGoogleLogin}
+                style={styles.googleButton}
+                activeOpacity={0.8}
+              >
+                <AntDesign name="google" size={22} color="#EA4335" />
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </ScrollView>
+
+      <Modal visible={isLoading} transparent>
+        <LoadingSpinner />
+      </Modal>
+    </View>
   );
 }
