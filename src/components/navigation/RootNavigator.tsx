@@ -23,9 +23,8 @@ export default function RootNavigator() {
   const t = useAppTheme();
 
   const tabBarStyle = {
-    backgroundColor: t.surface,
-    borderTopColor: t.surfaceBorder,
-    borderTopWidth: 1,
+    backgroundColor: t.background,
+    borderTopWidth: 0,
     height: 80,
     paddingTop: 8,
     paddingBottom: 24,
