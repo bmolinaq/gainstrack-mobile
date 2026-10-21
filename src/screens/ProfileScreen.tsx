@@ -12,7 +12,7 @@ import { useCallback, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { useFocusEffect } from "@react-navigation/native";
 import useAuthStore from "../store/useAuthStore";
-import GlassCard from "../components/ui/GlassCard";
+import BlurCard from "../components/ui/BlurCard";
 import { trainingSessionService } from "../services/trainingSessionService";
 import { routineService } from "../services/routineService";
 import { useAppTheme } from "../hooks/useAppTheme";
@@ -220,7 +220,7 @@ export default function ProfileScreen({ navigation }: any) {
 
         <Text style={styles.sectionLabel}>ESTADÍSTICAS</Text>
         <View style={styles.statsRow}>
-          <GlassCard intensity="default" style={styles.statCard}>
+          <BlurCard style={{ flex: 1, borderRadius: 18 }} contentStyle={{ paddingVertical: 20, alignItems: "center" }}>
             {statsLoading ? (
               <ActivityIndicator color={t.primary} size="small" />
             ) : (
@@ -229,8 +229,8 @@ export default function ProfileScreen({ navigation }: any) {
               </Text>
             )}
             <Text style={styles.statLabel}>Sesiones</Text>
-          </GlassCard>
-          <GlassCard intensity="default" style={styles.statCard}>
+          </BlurCard>
+          <BlurCard style={{ flex: 1, borderRadius: 18 }} contentStyle={{ paddingVertical: 20, alignItems: "center" }}>
             {statsLoading ? (
               <ActivityIndicator color={t.primary} size="small" />
             ) : (
@@ -239,7 +239,7 @@ export default function ProfileScreen({ navigation }: any) {
               </Text>
             )}
             <Text style={styles.statLabel}>Rutinas</Text>
-          </GlassCard>
+          </BlurCard>
         </View>
 
         <Text style={styles.sectionLabel}>CONFIGURACIÓN</Text>
@@ -250,7 +250,7 @@ export default function ProfileScreen({ navigation }: any) {
               activeOpacity={0.8}
               onPress={() => navigation.navigate(item.screen)}
             >
-              <GlassCard intensity="subtle" style={styles.navCard}>
+              <BlurCard style={{ borderRadius: 16 }} contentStyle={{ padding: 0 }}>
                 <View style={styles.navCardContent}>
                   <View style={styles.navCardLeft}>
                     <View style={styles.navIconWrap}>
@@ -264,7 +264,7 @@ export default function ProfileScreen({ navigation }: any) {
                     color={t.textTertiary}
                   />
                 </View>
-              </GlassCard>
+              </BlurCard>
             </TouchableOpacity>
           ))}
         </View>

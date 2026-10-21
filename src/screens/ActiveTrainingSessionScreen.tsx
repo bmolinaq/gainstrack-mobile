@@ -15,11 +15,11 @@ import {
   View,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import Popover from "react-native-popover-view";
 import { useFocusEffect } from "@react-navigation/native";
 import useActiveTrainingSessionStore from "../store/useActiveTrainingSessionStore";
 import useExercisePickerStore from "../store/useExercisePickerStore";
-import GlassCard from "../components/ui/GlassCard";
+import BlurCard from "../components/ui/BlurCard";
+import PopoverMenu from "../components/ui/PopoverMenu";
 import {
   TrainingSessionExercise,
   TrainingSessionSet,
@@ -284,34 +284,6 @@ function getStyles(t: ThemeColors) {
       flex: 1,
       color: t.textSecondary,
       fontSize: 12,
-    },
-    popover: {
-      backgroundColor: t.surface,
-      borderRadius: 14,
-      borderWidth: 1,
-      borderColor: t.surfaceBorder,
-      shadowColor: "#000",
-      shadowOffset: { width: 0, height: 8 },
-      shadowOpacity: 0.55,
-      shadowRadius: 16,
-      elevation: 12,
-      overflow: "hidden",
-      padding: 0,
-    },
-    popoverMenu: {
-      minWidth: 170,
-    },
-    popoverItem: {
-      flexDirection: "row",
-      alignItems: "center",
-      gap: 12,
-      paddingHorizontal: 18,
-      paddingVertical: 14,
-    },
-    popoverItemDanger: {
-      color: "rgba(255,75,75,0.9)",
-      fontSize: 14,
-      letterSpacing: 0.2,
     },
     addSetButton: {
       flexDirection: "row",
@@ -652,7 +624,7 @@ export default function ActiveTrainingSessionScreen({ navigation }: any) {
             keyboardShouldPersistTaps="handled"
           >
             {/* Session notes */}
-            <GlassCard style={styles.notesCard}>
+            <BlurCard style={{ borderRadius: 18 }}>
               <View style={styles.notesCardHeader}>
                 <Ionicons
                   name="document-text-outline"
@@ -670,7 +642,7 @@ export default function ActiveTrainingSessionScreen({ navigation }: any) {
                 onFocus={handleInputFocus}
                 onChangeText={handleUpdateSessionNotes}
               />
-            </GlassCard>
+            </BlurCard>
 
             {/* Exercises */}
             {activeTrainingSession.exercises.length === 0 && (
@@ -685,11 +657,7 @@ export default function ActiveTrainingSessionScreen({ navigation }: any) {
               .slice()
               .sort((a, b) => a.orderIndex - b.orderIndex)
               .map((ex: TrainingSessionExercise) => (
-                <GlassCard
-                  key={ex.id}
-                  intensity="strong"
-                  style={styles.exerciseCard}
-                >
+                <BlurCard key={ex.id} style={{ borderRadius: 22 }}>
                   {/* Exercise header */}
                   <View style={styles.exerciseHeaderRow}>
                     <View style={styles.exerciseHeaderInfo}>
@@ -707,7 +675,7 @@ export default function ActiveTrainingSessionScreen({ navigation }: any) {
                         {ex.orderIndex}
                       </Text>
                     </View>
-                    <Popover
+                    <PopoverMenu
                       isVisible={openExerciseMenuId === ex.id}
                       onRequestClose={() => setOpenExerciseMenuId(null)}
                       from={(sourceRef) => (
@@ -724,24 +692,14 @@ export default function ActiveTrainingSessionScreen({ navigation }: any) {
                           />
                         </TouchableOpacity>
                       )}
-                      popoverStyle={styles.popover}
-                      backgroundStyle={{ backgroundColor: "transparent" }}
                     >
-                      <View style={styles.popoverMenu}>
-                        <TouchableOpacity
-                          style={styles.popoverItem}
-                          activeOpacity={0.7}
-                          onPress={() => handleDeleteExercise()}
-                        >
-                          <Ionicons
-                            name="trash-outline"
-                            size={16}
-                            color="rgba(255,75,75,0.9)"
-                          />
-                          <Text style={styles.popoverItemDanger}>Eliminar</Text>
-                        </TouchableOpacity>
-                      </View>
-                    </Popover>
+                      <PopoverMenu.Item
+                        icon="trash-outline"
+                        label="Eliminar"
+                        danger
+                        onPress={() => handleDeleteExercise()}
+                      />
+                    </PopoverMenu>
                   </View>
 
                   {/* Exercise notes */}
@@ -769,11 +727,7 @@ export default function ActiveTrainingSessionScreen({ navigation }: any) {
                       .slice()
                       .sort((a, b) => a.setNumber - b.setNumber)
                       .map((set: TrainingSessionSet) => (
-                        <GlassCard
-                          key={set.id}
-                          intensity="subtle"
-                          style={styles.setCard}
-                        >
+                        <BlurCard key={set.id} style={{ borderRadius: 16 }} contentStyle={{ padding: 12 }}>
                           <View style={styles.setHeaderRow}>
                             <View style={styles.setHeaderInfo}>
                               <View style={styles.setBadge}>
@@ -876,7 +830,7 @@ export default function ActiveTrainingSessionScreen({ navigation }: any) {
                               onFocus={handleInputFocus}
                             />
                           </View>
-                        </GlassCard>
+                        </BlurCard>
                       ))}
                   </View>
 
@@ -888,7 +842,7 @@ export default function ActiveTrainingSessionScreen({ navigation }: any) {
                     <Ionicons name="add" size={16} color={t.textPrimary} />
                     <Text style={styles.addSetButtonText}>Agregar serie</Text>
                   </TouchableOpacity>
-                </GlassCard>
+                </BlurCard>
               ))}
 
             <TouchableOpacity

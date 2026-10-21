@@ -10,18 +10,18 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
 } from "react-native";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { APIGainstrackRoutineSummaryResponse } from "../types/routine.types";
 import axios from "axios";
 import { APIGainstrackErrorResponse } from "../types/api.types";
 import { routineService } from "../services/routineService";
 import { Ionicons } from "@expo/vector-icons";
 import Toast from "react-native-toast-message";
-import Popover from "react-native-popover-view";
 import { useFocusEffect } from "@react-navigation/native";
 import { BlurView } from "expo-blur";
+import PopoverMenu from "../components/ui/PopoverMenu";
 import { LinearGradient } from "expo-linear-gradient";
-import GlassCard from "../components/ui/GlassCard";
+import BlurCard from "../components/ui/BlurCard";
 import useActiveTrainingSessionStore from "../store/useActiveTrainingSessionStore";
 import ActiveSessionFAB from "../components/ui/ActiveSessionFAB";
 import { useAppTheme } from "../hooks/useAppTheme";
@@ -180,44 +180,6 @@ function getStyles(t: ThemeColors) {
       fontSize: 14,
       letterSpacing: 0.5,
     },
-    // ── Popover ─────────────────────────────────────────────
-    popover: {
-      backgroundColor: "transparent",
-      borderRadius: 14,
-      borderWidth: 1,
-      borderColor: "rgba(255,255,255,0.12)",
-      shadowColor: "#000",
-      shadowOffset: { width: 0, height: 8 },
-      shadowOpacity: 0.55,
-      shadowRadius: 16,
-      elevation: 12,
-      overflow: "hidden",
-      padding: 0,
-    },
-    popoverMenu: {
-      minWidth: 170,
-    },
-    popoverItem: {
-      flexDirection: "row",
-      alignItems: "center",
-      gap: 12,
-      paddingHorizontal: 18,
-      paddingVertical: 14,
-    },
-    popoverItemText: {
-      color: t.textPrimary,
-      fontSize: 14,
-      letterSpacing: 0.2,
-    },
-    popoverItemDanger: {
-      color: "rgba(255,75,75,0.9)",
-      fontSize: 14,
-      letterSpacing: 0.2,
-    },
-    popoverDivider: {
-      height: StyleSheet.hairlineWidth,
-      backgroundColor: t.divider,
-    },
     // ── States ───────────────────────────────────────────────
     errorBanner: {
       flexDirection: "row",
@@ -360,6 +322,15 @@ export default function RoutineScreen({ navigation }: any) {
   const [routineSelected, setRoutineSelected] =
     useState<APIGainstrackRoutineSummaryResponse | null>(null);
   const [isOptionsVisibles, setIsOptionVisibles] = useState<boolean>(false);
+
+  const listHeightRef = useRef(0);
+  const contentHeightRef = useRef(0);
+  const [isScrollable, setIsScrollable] = useState(false);
+
+  const checkScrollable = () => {
+    setIsScrollable(contentHeightRef.current > listHeightRef.current);
+  };
+
   useFocusEffect(
     useCallback(() => {
       fetchRoutines();
@@ -480,6 +451,14 @@ export default function RoutineScreen({ navigation }: any) {
           activeTrainingSession !== null && { paddingBottom: 120 },
         ]}
         showsVerticalScrollIndicator={false}
+        onLayout={(e) => {
+          listHeightRef.current = e.nativeEvent.layout.height;
+          checkScrollable();
+        }}
+        onContentSizeChange={(_w, h) => {
+          contentHeightRef.current = h;
+          checkScrollable();
+        }}
         ListHeaderComponent={
           <>
             {isLoading && (
@@ -520,18 +499,16 @@ export default function RoutineScreen({ navigation }: any) {
         }
         renderItem={({ item: routine }) => {
           return (
-            <View style={styles.card}>
-              <BlurView
-                tint="systemUltraThinMaterialDark"
-                intensity={35}
-                style={styles.cardGradient}
-              >
+            <BlurCard
+              style={{ borderRadius: RADIUS.xl }}
+              contentStyle={{ padding: 20, gap: 14 }}
+            >
                 {/* Top row: name + menu */}
                 <View style={styles.cardTopRow}>
                   <Text style={styles.routineName} numberOfLines={2}>
                     {routine.name}
                   </Text>
-                  <Popover
+                  <PopoverMenu
                     isVisible={
                       routineSelected?.id === routine.id && isOptionsVisibles
                     }
@@ -553,54 +530,28 @@ export default function RoutineScreen({ navigation }: any) {
                         />
                       </TouchableOpacity>
                     )}
-                    popoverStyle={styles.popover}
-                    backgroundStyle={{ backgroundColor: "transparent" }}
                   >
-                    <BlurView tint="systemUltraThinMaterialDark" intensity={60} style={styles.popoverMenu}>
-                      <TouchableOpacity
-                        style={styles.popoverItem}
-                        activeOpacity={0.7}
-                        onPress={() => {
-                          setIsOptionVisibles(false);
-                          navigation.navigate("EditRoutine", {
-                            routineId: routine.id,
-                          });
-                        }}
-                      >
-                        <Ionicons
-                          name="create-outline"
-                          size={16}
-                          color={t.textSecondary}
-                        />
-                        <Text style={styles.popoverItemText}>Editar</Text>
-                      </TouchableOpacity>
-                      <View style={styles.popoverDivider} />
-                      <TouchableOpacity
-                        style={styles.popoverItem}
-                        activeOpacity={0.7}
-                      >
-                        <Ionicons
-                          name="copy-outline"
-                          size={16}
-                          color={t.textSecondary}
-                        />
-                        <Text style={styles.popoverItemText}>Duplicar</Text>
-                      </TouchableOpacity>
-                      <View style={styles.popoverDivider} />
-                      <TouchableOpacity
-                        onPress={handleDeleteRoutine}
-                        style={styles.popoverItem}
-                        activeOpacity={0.7}
-                      >
-                        <Ionicons
-                          name="trash-outline"
-                          size={16}
-                          color="rgba(255,75,75,0.9)"
-                        />
-                        <Text style={styles.popoverItemDanger}>Eliminar</Text>
-                      </TouchableOpacity>
-                    </BlurView>
-                  </Popover>
+                    <PopoverMenu.Item
+                      icon="create-outline"
+                      label="Editar"
+                      onPress={() => {
+                        setIsOptionVisibles(false);
+                        navigation.navigate("EditRoutine", {
+                          routineId: routine.id,
+                        });
+                      }}
+                    />
+                    <PopoverMenu.Item
+                      icon="copy-outline"
+                      label="Duplicar"
+                    />
+                    <PopoverMenu.Item
+                      icon="trash-outline"
+                      label="Eliminar"
+                      danger
+                      onPress={handleDeleteRoutine}
+                    />
+                  </PopoverMenu>
                 </View>
 
                 {/* Notes */}
@@ -639,8 +590,7 @@ export default function RoutineScreen({ navigation }: any) {
                     color={t.primaryOnPrimary}
                   />
                 </TouchableOpacity>
-              </BlurView>
-            </View>
+            </BlurCard>
           );
         }}
       />
@@ -671,7 +621,7 @@ export default function RoutineScreen({ navigation }: any) {
                 </TouchableOpacity>
               </View>
 
-              <GlassCard intensity="subtle" style={styles.modalInputCard}>
+              <BlurCard style={{ borderRadius: 20, marginBottom: 20 }} contentStyle={{ padding: 0 }}>
                 <View style={styles.inputRow}>
                   <Ionicons
                     name="barbell-outline"
@@ -713,7 +663,7 @@ export default function RoutineScreen({ navigation }: any) {
                     numberOfLines={3}
                   />
                 </View>
-              </GlassCard>
+              </BlurCard>
 
               {errorMessage !== null && (
                 <View style={[styles.errorBanner, { marginBottom: 16 }]}>
@@ -740,11 +690,13 @@ export default function RoutineScreen({ navigation }: any) {
         </TouchableWithoutFeedback>
       </Modal>
 
-      <LinearGradient
-        colors={["transparent", t.background]}
-        style={styles.bottomFade}
-        pointerEvents="none"
-      />
+      {isScrollable && (
+        <LinearGradient
+          colors={["transparent", t.background]}
+          style={styles.bottomFade}
+          pointerEvents="none"
+        />
+      )}
 
       <ActiveSessionFAB
         onPress={() => {

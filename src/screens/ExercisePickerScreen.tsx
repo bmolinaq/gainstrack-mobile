@@ -9,6 +9,7 @@ import {
   View,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import ExerciseThumbnail from "../components/ui/ExerciseThumbnail";
 import { exerciseService } from "../services/exerciseService";
 import { APIGainsTrackExerciseResponse } from "../types/exercise.types";
 import axios from "axios";
@@ -375,6 +376,7 @@ export default function ExercisePickerScreen({ route, navigation }: any) {
                 ]}
                 activeOpacity={0.7}
               >
+                <ExerciseThumbnail exerciseId={exercise.id} />
                 <View style={styles.exerciseInfo}>
                   <Text
                     style={[

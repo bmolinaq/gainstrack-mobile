@@ -15,8 +15,8 @@ import { Ionicons } from "@expo/vector-icons";
 import { useFocusEffect } from "@react-navigation/native";
 import axios from "axios";
 import Toast from "react-native-toast-message";
-import Popover from "react-native-popover-view";
-import GlassCard from "../components/ui/GlassCard";
+import PopoverMenu from "../components/ui/PopoverMenu";
+import BlurCard from "../components/ui/BlurCard";
 import { gymService } from "../services/gymService";
 import { APIGainsTrackGymResponse } from "../types/gym.types";
 import { APIGainstrackErrorResponse } from "../types/api.types";
@@ -75,43 +75,6 @@ function getStyles(t: ThemeColors) {
     optionsButton: {
       padding: 4,
       marginLeft: 8,
-    },
-    popover: {
-      backgroundColor: t.surface,
-      borderRadius: 14,
-      borderWidth: 1,
-      borderColor: t.surfaceBorder,
-      shadowColor: "#000",
-      shadowOffset: { width: 0, height: 8 },
-      shadowOpacity: 0.55,
-      shadowRadius: 16,
-      elevation: 12,
-      overflow: "hidden",
-      padding: 0,
-    },
-    popoverMenu: {
-      minWidth: 160,
-    },
-    popoverItem: {
-      flexDirection: "row",
-      alignItems: "center",
-      gap: 12,
-      paddingHorizontal: 18,
-      paddingVertical: 14,
-    },
-    popoverItemText: {
-      color: t.textPrimary,
-      fontSize: 14,
-      letterSpacing: 0.2,
-    },
-    popoverItemDanger: {
-      color: "rgba(255,75,75,0.9)",
-      fontSize: 14,
-      letterSpacing: 0.2,
-    },
-    popoverDivider: {
-      height: StyleSheet.hairlineWidth,
-      backgroundColor: t.divider,
     },
     errorBanner: {
       flexDirection: "row",
@@ -390,11 +353,11 @@ export default function GymListScreen({ navigation }: any) {
           </>
         }
         renderItem={({ item: gym }) => (
-          <GlassCard intensity="strong" style={styles.card}>
+          <BlurCard style={{ borderRadius: 18 }} contentStyle={{ padding: 18, flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
             <Text style={styles.gymName} numberOfLines={2}>
               {gym.name}
             </Text>
-            <Popover
+            <PopoverMenu
               isVisible={selectedGym?.id === gym.id && isOptionsVisible}
               onRequestClose={() => setIsOptionsVisible(false)}
               from={(sourceRef, showPopover) => (
@@ -414,38 +377,11 @@ export default function GymListScreen({ navigation }: any) {
                   />
                 </TouchableOpacity>
               )}
-              popoverStyle={styles.popover}
-              backgroundStyle={{ backgroundColor: "transparent" }}
             >
-              <View style={styles.popoverMenu}>
-                <TouchableOpacity
-                  style={styles.popoverItem}
-                  activeOpacity={0.7}
-                  onPress={() => openEditModal(gym)}
-                >
-                  <Ionicons
-                    name="create-outline"
-                    size={16}
-                    color={t.textSecondary}
-                  />
-                  <Text style={styles.popoverItemText}>Editar</Text>
-                </TouchableOpacity>
-                <View style={styles.popoverDivider} />
-                <TouchableOpacity
-                  style={styles.popoverItem}
-                  activeOpacity={0.7}
-                  onPress={() => handleDelete(gym)}
-                >
-                  <Ionicons
-                    name="trash-outline"
-                    size={16}
-                    color="rgba(255,75,75,0.9)"
-                  />
-                  <Text style={styles.popoverItemDanger}>Eliminar</Text>
-                </TouchableOpacity>
-              </View>
-            </Popover>
-          </GlassCard>
+              <PopoverMenu.Item icon="create-outline" label="Editar" onPress={() => openEditModal(gym)} />
+              <PopoverMenu.Item icon="trash-outline" label="Eliminar" danger onPress={() => handleDelete(gym)} />
+            </PopoverMenu>
+          </BlurCard>
         )}
       />
 
@@ -460,7 +396,7 @@ export default function GymListScreen({ navigation }: any) {
       <Modal animationType="fade" visible={modalVisible} transparent>
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <View style={styles.centeredView}>
-            <GlassCard intensity="strong" style={styles.modalCard}>
+            <BlurCard style={{ width: "100%", borderRadius: 28 }} contentStyle={{ padding: 24 }}>
               <View style={styles.modalHeader}>
                 <View>
                   <Text style={styles.modalTitle}>
@@ -483,7 +419,7 @@ export default function GymListScreen({ navigation }: any) {
                 </TouchableOpacity>
               </View>
 
-              <GlassCard intensity="subtle" style={styles.inputCard}>
+              <BlurCard style={{ borderRadius: 20, marginBottom: 20 }} contentStyle={{ padding: 0 }}>
                 <View style={styles.inputRow}>
                   <Ionicons
                     name="business-outline"
@@ -501,7 +437,7 @@ export default function GymListScreen({ navigation }: any) {
                     autoFocus
                   />
                 </View>
-              </GlassCard>
+              </BlurCard>
 
               <TouchableOpacity
                 onPress={handleSave}
@@ -516,7 +452,7 @@ export default function GymListScreen({ navigation }: any) {
                   {selectedGym ? "Guardar cambios" : "Crear gimnasio"}
                 </Text>
               </TouchableOpacity>
-            </GlassCard>
+            </BlurCard>
           </View>
         </TouchableWithoutFeedback>
       </Modal>

@@ -9,7 +9,8 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import axios from "axios";
-import GlassCard from "../components/ui/GlassCard";
+import BlurCard from "../components/ui/BlurCard";
+import ExerciseThumbnail from "../components/ui/ExerciseThumbnail";
 import { trainingSessionService } from "../services/trainingSessionService";
 import { APIGainstrackTrainingSessionDetailResponse } from "../types/trainingSession.types";
 import { APIGainstrackErrorResponse } from "../types/api.types";
@@ -75,6 +76,12 @@ function getStyles(t: ThemeColors) {
     },
     infoCard: {
       borderRadius: 18,
+      borderWidth: 1,
+      borderColor: "rgba(255,255,255,0.07)",
+      overflow: "hidden",
+    },
+    infoCardBlur: {
+      padding: 16,
       gap: 10,
     },
     infoRow: {
@@ -90,6 +97,12 @@ function getStyles(t: ThemeColors) {
     },
     notesCard: {
       borderRadius: 18,
+      borderWidth: 1,
+      borderColor: "rgba(255,255,255,0.07)",
+      overflow: "hidden",
+    },
+    notesCardBlur: {
+      padding: 16,
     },
     notesCardHeader: {
       flexDirection: "row",
@@ -120,6 +133,12 @@ function getStyles(t: ThemeColors) {
     },
     exerciseCard: {
       borderRadius: 22,
+      borderWidth: 1,
+      borderColor: "rgba(255,255,255,0.07)",
+      overflow: "hidden",
+    },
+    exerciseCardBlur: {
+      padding: 16,
     },
     exerciseHeaderRow: {
       flexDirection: "row",
@@ -192,6 +211,11 @@ function getStyles(t: ThemeColors) {
     },
     setCard: {
       borderRadius: 16,
+      borderWidth: 1,
+      borderColor: "rgba(255,255,255,0.07)",
+      overflow: "hidden",
+    },
+    setCardBlur: {
       padding: 12,
     },
     setHeaderRow: {
@@ -338,51 +362,35 @@ export default function TrainingSessionDetailScreen({
           showsVerticalScrollIndicator={false}
         >
           {/* Session info */}
-          <GlassCard intensity="strong" style={styles.infoCard}>
+          <BlurCard style={{ borderRadius: 18 }} contentStyle={{ padding: 16, gap: 10 }}>
             <View style={styles.infoRow}>
-              <Ionicons
-                name="location-outline"
-                size={16}
-                color={t.textTertiary}
-              />
+              <Ionicons name="location-outline" size={16} color={t.textTertiary} />
               <Text style={styles.infoText} numberOfLines={1}>
                 {trainingSession.gym ? trainingSession.gym.name : "Sin gimnasio"}
               </Text>
             </View>
             <View style={styles.infoRow}>
-              <Ionicons
-                name="calendar-outline"
-                size={16}
-                color={t.textTertiary}
-              />
+              <Ionicons name="calendar-outline" size={16} color={t.textTertiary} />
               <Text style={styles.infoText}>
                 {formatDate(trainingSession.sessionDate)}
               </Text>
             </View>
             <View style={styles.infoRow}>
-              <Ionicons
-                name="time-outline"
-                size={16}
-                color={t.textTertiary}
-              />
+              <Ionicons name="time-outline" size={16} color={t.textTertiary} />
               <Text style={styles.infoText}>{trainingSession.duration} min</Text>
             </View>
-          </GlassCard>
+          </BlurCard>
 
           {/* Session notes */}
-          <GlassCard style={styles.notesCard}>
+          <BlurCard style={{ borderRadius: 18 }}>
             <View style={styles.notesCardHeader}>
-              <Ionicons
-                name="document-text-outline"
-                size={15}
-                color={t.textTertiary}
-              />
+              <Ionicons name="document-text-outline" size={15} color={t.textTertiary} />
               <Text style={styles.notesCardLabel}>Notas de la sesión</Text>
             </View>
             <Text style={styles.notesText}>
               {trainingSession.notes ?? "Sin notas"}
             </Text>
-          </GlassCard>
+          </BlurCard>
 
           {/* Exercises */}
           {trainingSession.exercises.length === 0 && (
@@ -397,8 +405,9 @@ export default function TrainingSessionDetailScreen({
             .slice()
             .sort((a, b) => a.orderIndex - b.orderIndex)
             .map((ex) => (
-              <GlassCard key={ex.id} intensity="strong" style={styles.exerciseCard}>
+              <BlurCard key={ex.id} style={{ borderRadius: 22 }}>
                 <View style={styles.exerciseHeaderRow}>
+                  <ExerciseThumbnail exerciseId={ex.exercise.id} />
                   <View style={styles.exerciseHeaderInfo}>
                     <Text style={styles.exerciseName} numberOfLines={2}>
                       {ex.exercise.name}
@@ -435,11 +444,7 @@ export default function TrainingSessionDetailScreen({
                     .slice()
                     .sort((a, b) => a.setNumber - b.setNumber)
                     .map((set) => (
-                      <GlassCard
-                        key={set.id}
-                        intensity="subtle"
-                        style={styles.setCard}
-                      >
+                      <BlurCard key={set.id} style={{ borderRadius: 16 }} contentStyle={{ padding: 12 }}>
                         <View style={styles.setHeaderRow}>
                           <View style={styles.setBadge}>
                             <Text style={styles.setBadgeText}>
@@ -483,10 +488,10 @@ export default function TrainingSessionDetailScreen({
                             </Text>
                           </View>
                         )}
-                      </GlassCard>
+                      </BlurCard>
                     ))}
                 </View>
-              </GlassCard>
+              </BlurCard>
             ))}
         </ScrollView>
       )}

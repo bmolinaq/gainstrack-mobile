@@ -22,11 +22,12 @@ import {
 } from "../types/routine.types";
 import axios from "axios";
 import { APIGainstrackErrorResponse } from "../types/api.types";
-import Popover from "react-native-popover-view";
 import { useFocusEffect } from "@react-navigation/native";
 import useExercisePickerStore from "../store/useExercisePickerStore";
 import Toast from "react-native-toast-message";
-import GlassCard from "../components/ui/GlassCard";
+import BlurCard from "../components/ui/BlurCard";
+import PopoverMenu from "../components/ui/PopoverMenu";
+import ExerciseThumbnail from "../components/ui/ExerciseThumbnail";
 import { useAppTheme } from "../hooks/useAppTheme";
 import { ThemeColors } from "../theme";
 
@@ -129,6 +130,7 @@ function getStyles(t: ThemeColors) {
     },
     notesCard: {
       borderRadius: 18,
+      // layout delegado a BlurCard
     },
     notesCardHeader: {
       flexDirection: "row",
@@ -304,34 +306,6 @@ function getStyles(t: ThemeColors) {
       flex: 1,
       color: t.textSecondary,
       fontSize: 12,
-    },
-    popover: {
-      backgroundColor: t.surface,
-      borderRadius: 14,
-      borderWidth: 1,
-      borderColor: t.surfaceBorder,
-      shadowColor: "#000",
-      shadowOffset: { width: 0, height: 8 },
-      shadowOpacity: 0.55,
-      shadowRadius: 16,
-      elevation: 12,
-      overflow: "hidden",
-      padding: 0,
-    },
-    popoverMenu: {
-      minWidth: 170,
-    },
-    popoverItem: {
-      flexDirection: "row",
-      alignItems: "center",
-      gap: 12,
-      paddingHorizontal: 18,
-      paddingVertical: 14,
-    },
-    popoverItemDanger: {
-      color: "rgba(255,75,75,0.9)",
-      fontSize: 14,
-      letterSpacing: 0.2,
     },
     addSetButton: {
       flexDirection: "row",
@@ -799,7 +773,7 @@ export default function EditRoutineScreen({ route, navigation }: any) {
                 />
               </View>
 
-              <GlassCard style={styles.notesCard}>
+              <BlurCard style={{ borderRadius: 18 }}>
                 <View style={styles.notesCardHeader}>
                   <Ionicons
                     name="document-text-outline"
@@ -818,7 +792,7 @@ export default function EditRoutineScreen({ route, navigation }: any) {
                   style={styles.notesInput}
                   multiline
                 />
-              </GlassCard>
+              </BlurCard>
 
               {routine.exercises.length === 0 && (
                 <View style={styles.emptyContainer}>
@@ -829,12 +803,12 @@ export default function EditRoutineScreen({ route, navigation }: any) {
               )}
 
               {routine.exercises.map((routineExercise) => (
-                <GlassCard
+                <BlurCard
                   key={routineExercise.id}
-                  intensity="strong"
-                  style={styles.exerciseCard}
+                  style={{ borderRadius: 22 }}
                 >
                   <View style={styles.exerciseHeaderRow}>
+                    <ExerciseThumbnail exerciseId={routineExercise.exercise.id} />
                     <View style={styles.exerciseHeaderInfo}>
                       <Text style={styles.exerciseName} numberOfLines={2}>
                         {routineExercise.exercise.name}
@@ -850,7 +824,7 @@ export default function EditRoutineScreen({ route, navigation }: any) {
                         {routineExercise.orderIndex}
                       </Text>
                     </View>
-                    <Popover
+                    <PopoverMenu
                       isVisible={openExerciseMenuId === routineExercise.id}
                       onRequestClose={() => setOpenExerciseMenuId(null)}
                       from={(sourceRef, showPopover) => (
@@ -869,24 +843,14 @@ export default function EditRoutineScreen({ route, navigation }: any) {
                           />
                         </TouchableOpacity>
                       )}
-                      popoverStyle={styles.popover}
-                      backgroundStyle={{ backgroundColor: "transparent" }}
                     >
-                      <View style={styles.popoverMenu}>
-                        <TouchableOpacity
-                          style={styles.popoverItem}
-                          activeOpacity={0.7}
-                          onPress={() => handleDeleteRoutineExercise()}
-                        >
-                          <Ionicons
-                            name="trash-outline"
-                            size={16}
-                            color="rgba(255,75,75,0.9)"
-                          />
-                          <Text style={styles.popoverItemDanger}>Eliminar</Text>
-                        </TouchableOpacity>
-                      </View>
-                    </Popover>
+                      <PopoverMenu.Item
+                        icon="trash-outline"
+                        label="Eliminar"
+                        danger
+                        onPress={() => handleDeleteRoutineExercise()}
+                      />
+                    </PopoverMenu>
                   </View>
 
                   <View style={styles.exerciseNotesRow}>
@@ -909,10 +873,10 @@ export default function EditRoutineScreen({ route, navigation }: any) {
 
                   <View style={styles.setsContainer}>
                     {routineExercise.sets.map((routineExerciseSet) => (
-                      <GlassCard
+                      <BlurCard
                         key={routineExerciseSet.id}
-                        intensity="subtle"
-                        style={styles.setCard}
+                        style={{ borderRadius: 16 }}
+                        contentStyle={{ padding: 12 }}
                       >
                         <View style={styles.setHeaderRow}>
                           <View style={styles.setHeaderInfo}>
@@ -999,7 +963,7 @@ export default function EditRoutineScreen({ route, navigation }: any) {
                             onFocus={handleInputFocus}
                           />
                         </View>
-                      </GlassCard>
+                      </BlurCard>
                     ))}
                   </View>
 
@@ -1011,7 +975,7 @@ export default function EditRoutineScreen({ route, navigation }: any) {
                     <Ionicons name="add" size={16} color={t.textPrimary} />
                     <Text style={styles.addSetButtonText}>Agregar set</Text>
                   </TouchableOpacity>
-                </GlassCard>
+                </BlurCard>
               ))}
 
               <TouchableOpacity

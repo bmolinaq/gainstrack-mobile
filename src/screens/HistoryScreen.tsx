@@ -10,8 +10,8 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useFocusEffect } from "@react-navigation/native";
-import { BlurView } from "expo-blur";
 import { LinearGradient } from "expo-linear-gradient";
+import BlurCard from "../components/ui/BlurCard";
 import axios from "axios";
 import ActiveSessionFAB from "../components/ui/ActiveSessionFAB";
 import { routineService } from "../services/routineService";
@@ -465,25 +465,19 @@ export default function HistoryScreen({ navigation }: any) {
               navigation.navigate("TrainingSessionDetail", { id: trainingSession.id })
             }
           >
-            <View style={styles.card}>
-              <BlurView
-                tint="systemUltraThinMaterialDark"
-                intensity={35}
-                style={styles.cardBlur}
-              >
-                <View style={styles.trainingSessionMeta}>
-                  <Text style={styles.trainingSessionDate}>
-                    {formatDate(trainingSession.sessionDate)}
-                  </Text>
-                  <Text style={styles.trainingSessionDate}>
-                    {trainingSession.duration} min
-                  </Text>
-                </View>
-                <Text style={styles.trainingSessionNotes} numberOfLines={3}>
-                  {trainingSession.notes ?? "Sin notas"}
+            <BlurCard style={{ borderRadius: RADIUS.xl }} contentStyle={{ padding: 18 }}>
+              <View style={styles.trainingSessionMeta}>
+                <Text style={styles.trainingSessionDate}>
+                  {formatDate(trainingSession.sessionDate)}
                 </Text>
-              </BlurView>
-            </View>
+                <Text style={styles.trainingSessionDate}>
+                  {trainingSession.duration} min
+                </Text>
+              </View>
+              <Text style={styles.trainingSessionNotes} numberOfLines={3}>
+                {trainingSession.notes ?? "Sin notas"}
+              </Text>
+            </BlurCard>
           </TouchableOpacity>
         )}
       />

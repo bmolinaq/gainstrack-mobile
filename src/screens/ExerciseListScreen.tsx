@@ -16,8 +16,8 @@ import { Ionicons } from "@expo/vector-icons";
 import { useFocusEffect } from "@react-navigation/native";
 import axios from "axios";
 import Toast from "react-native-toast-message";
-import Popover from "react-native-popover-view";
-import GlassCard from "../components/ui/GlassCard";
+import PopoverMenu from "../components/ui/PopoverMenu";
+import BlurCard from "../components/ui/BlurCard";
 import { exerciseService } from "../services/exerciseService";
 import { muscleGroupService } from "../services/muscleGroupService";
 import { APIGainsTrackExerciseResponse } from "../types/exercise.types";
@@ -96,43 +96,6 @@ function getStyles(t: ThemeColors) {
       fontSize: 10,
       fontFamily: "Inter-Bold",
       letterSpacing: 1,
-    },
-    popover: {
-      backgroundColor: t.surface,
-      borderRadius: 14,
-      borderWidth: 1,
-      borderColor: t.surfaceBorder,
-      shadowColor: "#000",
-      shadowOffset: { width: 0, height: 8 },
-      shadowOpacity: 0.55,
-      shadowRadius: 16,
-      elevation: 12,
-      overflow: "hidden",
-      padding: 0,
-    },
-    popoverMenu: {
-      minWidth: 160,
-    },
-    popoverItem: {
-      flexDirection: "row",
-      alignItems: "center",
-      gap: 12,
-      paddingHorizontal: 18,
-      paddingVertical: 14,
-    },
-    popoverItemText: {
-      color: t.textPrimary,
-      fontSize: 14,
-      letterSpacing: 0.2,
-    },
-    popoverItemDanger: {
-      color: "rgba(255,75,75,0.9)",
-      fontSize: 14,
-      letterSpacing: 0.2,
-    },
-    popoverDivider: {
-      height: StyleSheet.hairlineWidth,
-      backgroundColor: t.divider,
     },
     errorBanner: {
       flexDirection: "row",
@@ -481,12 +444,12 @@ export default function ExerciseListScreen({ navigation }: any) {
           </>
         }
         renderItem={({ item: exercise }) => (
-          <GlassCard intensity="strong" style={styles.card}>
+          <BlurCard style={{ borderRadius: 18 }} contentStyle={{ padding: 18 }}>
             <View style={styles.cardTopRow}>
               <Text style={styles.exerciseName} numberOfLines={2}>
                 {exercise.name}
               </Text>
-              <Popover
+              <PopoverMenu
                 isVisible={
                   selectedExercise?.id === exercise.id && isOptionsVisible
                 }
@@ -508,44 +471,17 @@ export default function ExerciseListScreen({ navigation }: any) {
                     />
                   </TouchableOpacity>
                 )}
-                popoverStyle={styles.popover}
-                backgroundStyle={{ backgroundColor: "transparent" }}
               >
-                <View style={styles.popoverMenu}>
-                  <TouchableOpacity
-                    style={styles.popoverItem}
-                    activeOpacity={0.7}
-                    onPress={() => openEditModal(exercise)}
-                  >
-                    <Ionicons
-                      name="create-outline"
-                      size={16}
-                      color={t.textSecondary}
-                    />
-                    <Text style={styles.popoverItemText}>Editar</Text>
-                  </TouchableOpacity>
-                  <View style={styles.popoverDivider} />
-                  <TouchableOpacity
-                    style={styles.popoverItem}
-                    activeOpacity={0.7}
-                    onPress={() => handleDelete(exercise)}
-                  >
-                    <Ionicons
-                      name="trash-outline"
-                      size={16}
-                      color="rgba(255,75,75,0.9)"
-                    />
-                    <Text style={styles.popoverItemDanger}>Eliminar</Text>
-                  </TouchableOpacity>
-                </View>
-              </Popover>
+                <PopoverMenu.Item icon="create-outline" label="Editar" onPress={() => openEditModal(exercise)} />
+                <PopoverMenu.Item icon="trash-outline" label="Eliminar" danger onPress={() => handleDelete(exercise)} />
+              </PopoverMenu>
             </View>
             <View style={styles.pill}>
               <Text style={styles.pillText}>
                 {exercise.muscleGroup.name.toUpperCase()}
               </Text>
             </View>
-          </GlassCard>
+          </BlurCard>
         )}
       />
 
@@ -560,7 +496,7 @@ export default function ExerciseListScreen({ navigation }: any) {
       <Modal animationType="fade" visible={modalVisible} transparent>
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <View style={styles.centeredView}>
-            <GlassCard intensity="strong" style={styles.modalCard}>
+            <BlurCard style={{ width: "100%", borderRadius: 28 }} contentStyle={{ padding: 24 }}>
               <View style={styles.modalHeader}>
                 <View>
                   <Text style={styles.modalTitle}>
@@ -585,7 +521,7 @@ export default function ExerciseListScreen({ navigation }: any) {
                 </TouchableOpacity>
               </View>
 
-              <GlassCard intensity="subtle" style={styles.inputCard}>
+              <BlurCard style={{ borderRadius: 20, marginBottom: 12 }} contentStyle={{ padding: 0 }}>
                 <View style={styles.inputRow}>
                   <Ionicons
                     name="barbell-outline"
@@ -602,7 +538,7 @@ export default function ExerciseListScreen({ navigation }: any) {
                     autoCapitalize="sentences"
                   />
                 </View>
-              </GlassCard>
+              </BlurCard>
 
               {/* Selector de grupo muscular */}
               <TouchableOpacity
@@ -630,7 +566,7 @@ export default function ExerciseListScreen({ navigation }: any) {
               </TouchableOpacity>
 
               {muscleGroupDropdownOpen && (
-                <GlassCard intensity="subtle" style={styles.dropdownList}>
+                <BlurCard style={{ borderRadius: 14, marginBottom: 12 }} contentStyle={{ padding: 0 }}>
                   <ScrollView
                     style={{ maxHeight: 180 }}
                     showsVerticalScrollIndicator={false}
@@ -669,7 +605,7 @@ export default function ExerciseListScreen({ navigation }: any) {
                       </View>
                     ))}
                   </ScrollView>
-                </GlassCard>
+                </BlurCard>
               )}
 
               <TouchableOpacity
@@ -686,7 +622,7 @@ export default function ExerciseListScreen({ navigation }: any) {
                   {selectedExercise ? "Guardar cambios" : "Crear ejercicio"}
                 </Text>
               </TouchableOpacity>
-            </GlassCard>
+            </BlurCard>
           </View>
         </TouchableWithoutFeedback>
       </Modal>

@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import axios from "axios";
-import GlassCard from "../components/ui/GlassCard";
+import BlurCard from "../components/ui/BlurCard";
 import ScreenHeader from "../components/ui/ScreenHeader";
 import { trainingSessionService } from "../services/trainingSessionService";
 import useActiveTrainingSessionStore from "../store/useActiveTrainingSessionStore";
@@ -235,17 +235,17 @@ export default function TrainingSessionSummaryScreen({ navigation }: any) {
         <ScreenHeader title="Resumen" style={styles.titleSection} />
 
         <View style={styles.statsRow}>
-          <GlassCard intensity="strong" style={styles.statCard}>
+          <BlurCard style={{ flex: 1, borderRadius: 18 }} contentStyle={{ alignItems: "center", gap: 6 }}>
             <Ionicons name="time-outline" size={22} color={t.primary} />
             <Text style={styles.statValue}>{duration}</Text>
             <Text style={styles.statLabel}>MIN</Text>
-          </GlassCard>
-          <GlassCard intensity="strong" style={styles.statCard}>
+          </BlurCard>
+          <BlurCard style={{ flex: 1, borderRadius: 18 }} contentStyle={{ alignItems: "center", gap: 6 }}>
             <Ionicons name="barbell-outline" size={22} color={t.primary} />
             <Text style={styles.statValue}>{completedExercises.length}</Text>
             <Text style={styles.statLabel}>EJERCICIOS</Text>
-          </GlassCard>
-          <GlassCard intensity="strong" style={styles.statCard}>
+          </BlurCard>
+          <BlurCard style={{ flex: 1, borderRadius: 18 }} contentStyle={{ alignItems: "center", gap: 6 }}>
             <Ionicons
               name="checkmark-circle-outline"
               size={22}
@@ -253,10 +253,10 @@ export default function TrainingSessionSummaryScreen({ navigation }: any) {
             />
             <Text style={styles.statValue}>{totalSets}</Text>
             <Text style={styles.statLabel}>SERIES</Text>
-          </GlassCard>
+          </BlurCard>
         </View>
 
-        <GlassCard style={styles.notesCard}>
+        <BlurCard style={{ borderRadius: 18 }}>
           <View style={styles.notesCardHeader}>
             <Ionicons
               name="document-text-outline"
@@ -273,7 +273,7 @@ export default function TrainingSessionSummaryScreen({ navigation }: any) {
             multiline
             onChangeText={setNotes}
           />
-        </GlassCard>
+        </BlurCard>
 
         {errorMessage !== null && (
           <View style={styles.errorBanner}>
