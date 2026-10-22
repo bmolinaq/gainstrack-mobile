@@ -19,6 +19,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import useActiveTrainingSessionStore from "../store/useActiveTrainingSessionStore";
 import useExercisePickerStore from "../store/useExercisePickerStore";
 import BlurCard from "../components/ui/BlurCard";
+import ExerciseThumbnail from "../components/ui/ExerciseThumbnail";
 import PopoverMenu from "../components/ui/PopoverMenu";
 import {
   TrainingSessionExercise,
@@ -659,7 +660,16 @@ export default function ActiveTrainingSessionScreen({ navigation }: any) {
               .map((ex: TrainingSessionExercise) => (
                 <BlurCard key={ex.id} style={{ borderRadius: 22 }}>
                   {/* Exercise header */}
-                  <View style={styles.exerciseHeaderRow}>
+                  <TouchableOpacity
+                    style={styles.exerciseHeaderRow}
+                    activeOpacity={0.7}
+                    onPress={() =>
+                      navigation.navigate("ExerciseDetail", {
+                        id: ex.exercise.id,
+                      })
+                    }
+                  >
+                    <ExerciseThumbnail exerciseId={ex.exercise.id} />
                     <View style={styles.exerciseHeaderInfo}>
                       <Text style={styles.exerciseName} numberOfLines={2}>
                         {ex.exercise.name}
@@ -700,7 +710,7 @@ export default function ActiveTrainingSessionScreen({ navigation }: any) {
                         onPress={() => handleDeleteExercise()}
                       />
                     </PopoverMenu>
-                  </View>
+                  </TouchableOpacity>
 
                   {/* Exercise notes */}
                   <View style={styles.exerciseNotesRow}>

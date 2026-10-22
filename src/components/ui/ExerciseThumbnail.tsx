@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { exerciseService } from "../../services/exerciseService";
@@ -7,7 +7,12 @@ import { useAppTheme } from "../../hooks/useAppTheme";
 
 type ThumbnailSource = { uri: string; headers: { Authorization: string } };
 
-export default function ExerciseThumbnail({ exerciseId }: { exerciseId: number }) {
+interface ExerciseThumbnailProps {
+  exerciseId: number;
+  onPress?: () => void;
+}
+
+export default function ExerciseThumbnail({ exerciseId, onPress }: ExerciseThumbnailProps) {
   const t = useAppTheme();
   const [source, setSource] = useState<ThumbnailSource | null>(null);
   const [hasError, setHasError] = useState(false);
@@ -22,23 +27,30 @@ export default function ExerciseThumbnail({ exerciseId }: { exerciseId: number }
     };
   }, [exerciseId]);
 
-  if (hasError || source === null) {
-    return (
+  const content =
+    hasError || source === null ? (
       <View style={[styles.base, { backgroundColor: t.surfaceElevated, borderColor: t.surfaceBorder }]}>
         <Ionicons name="barbell-outline" size={26} color={t.textTertiary} />
       </View>
+    ) : (
+      <Image
+        source={source}
+        style={[styles.base, { backgroundColor: t.surfaceElevated }]}
+        contentFit="cover"
+        onError={() => setHasError(true)}
+        transition={150}
+      />
+    );
+
+  if (onPress !== undefined) {
+    return (
+      <TouchableOpacity onPress={onPress} activeOpacity={0.7}>
+        {content}
+      </TouchableOpacity>
     );
   }
 
-  return (
-    <Image
-      source={source}
-      style={[styles.base, { backgroundColor: t.surfaceElevated }]}
-      contentFit="cover"
-      onError={() => setHasError(true)}
-      transition={150}
-    />
-  );
+  return content;
 }
 
 const styles = StyleSheet.create({

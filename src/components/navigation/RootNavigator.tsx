@@ -56,6 +56,7 @@ export default function RootNavigator() {
             getFocusedRouteNameFromRoute(route) === "ExercisePicker" ||
             getFocusedRouteNameFromRoute(route) === "GymPicker" ||
             getFocusedRouteNameFromRoute(route) === "ActiveTrainingSession" ||
+            getFocusedRouteNameFromRoute(route) === "ExerciseDetail" ||
             getFocusedRouteNameFromRoute(route) === "TrainingSessionSummary"
               ? { display: "none" }
               : tabBarStyle,
@@ -69,7 +70,8 @@ export default function RootNavigator() {
             <Ionicons name="time-outline" size={size} color={color} />
           ),
           tabBarStyle:
-            getFocusedRouteNameFromRoute(route) === "TrainingSessionDetail"
+            getFocusedRouteNameFromRoute(route) === "TrainingSessionDetail" ||
+            getFocusedRouteNameFromRoute(route) === "ExerciseDetail"
               ? { display: "none" }
               : tabBarStyle,
         })}

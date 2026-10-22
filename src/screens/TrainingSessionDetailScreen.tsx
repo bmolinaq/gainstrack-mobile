@@ -406,7 +406,15 @@ export default function TrainingSessionDetailScreen({
             .sort((a, b) => a.orderIndex - b.orderIndex)
             .map((ex) => (
               <BlurCard key={ex.id} style={{ borderRadius: 22 }}>
-                <View style={styles.exerciseHeaderRow}>
+                <TouchableOpacity
+                  style={styles.exerciseHeaderRow}
+                  activeOpacity={0.7}
+                  onPress={() =>
+                    navigation.navigate("ExerciseDetail", {
+                      id: ex.exercise.id,
+                    })
+                  }
+                >
                   <ExerciseThumbnail exerciseId={ex.exercise.id} />
                   <View style={styles.exerciseHeaderInfo}>
                     <Text style={styles.exerciseName} numberOfLines={2}>
@@ -423,7 +431,7 @@ export default function TrainingSessionDetailScreen({
                       {ex.orderIndex}
                     </Text>
                   </View>
-                </View>
+                </TouchableOpacity>
 
                 {ex.notes !== null && ex.notes !== "" && (
                   <View style={styles.exerciseNotesRow}>
