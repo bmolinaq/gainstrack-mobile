@@ -301,6 +301,25 @@ function getStyles(t: ThemeColors) {
       fontSize: 14,
       letterSpacing: 0.5,
     },
+    warningIconContainer: {
+      alignSelf: "center",
+      marginBottom: 16,
+    },
+    dangerButton: {
+      backgroundColor: "rgba(255,75,75,0.15)",
+      borderWidth: 1,
+      borderColor: "rgba(255,75,75,0.35)",
+      borderRadius: RADIUS.pill,
+      paddingVertical: 14,
+      alignItems: "center",
+      marginBottom: 8,
+    },
+    dangerButtonText: {
+      color: "rgba(255,75,75,0.9)",
+      fontFamily: "Inter-Bold",
+      fontSize: 16,
+      letterSpacing: 0.5,
+    },
   });
 }
 
@@ -308,7 +327,8 @@ export default function RoutineScreen({ navigation }: any) {
   const t = useAppTheme();
   const styles = useMemo(() => getStyles(t), [t]);
 
-  const { activeTrainingSession } = useActiveTrainingSessionStore();
+  const { activeTrainingSession, clearTrainingSession } =
+    useActiveTrainingSessionStore();
 
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -317,6 +337,10 @@ export default function RoutineScreen({ navigation }: any) {
   >([]);
   const [isCreateRoutineModalOpen, setIsCreateRoutineModalOpen] =
     useState<boolean>(false);
+  const [isActiveSessionWarningOpen, setIsActiveSessionWarningOpen] =
+    useState<boolean>(false);
+  const [routineToStart, setRoutineToStart] =
+    useState<APIGainstrackRoutineSummaryResponse | null>(null);
   const [routineName, setRoutineName] = useState<string>("");
   const [routineNotes, setRoutineNotes] = useState<string>("");
   const [routineSelected, setRoutineSelected] =
@@ -421,6 +445,29 @@ export default function RoutineScreen({ navigation }: any) {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleStartRoutine = (routine: APIGainstrackRoutineSummaryResponse) => {
+    if (activeTrainingSession !== null) {
+      setRoutineToStart(routine);
+      setIsActiveSessionWarningOpen(true);
+    } else {
+      navigation.navigate("GymPicker", { routineId: routine.id });
+    }
+  };
+
+  const handleConfirmStartAnyway = async () => {
+    await clearTrainingSession();
+    setIsActiveSessionWarningOpen(false);
+    if (routineToStart !== null) {
+      navigation.navigate("GymPicker", { routineId: routineToStart.id });
+    }
+    setRoutineToStart(null);
+  };
+
+  const handleCancelStartAnyway = () => {
+    setIsActiveSessionWarningOpen(false);
+    setRoutineToStart(null);
   };
 
   const listData =
@@ -575,11 +622,7 @@ export default function RoutineScreen({ navigation }: any) {
 
                 {/* Start button */}
                 <TouchableOpacity
-                  onPress={() => {
-                    navigation.navigate("GymPicker", {
-                      routineId: routine.id,
-                    });
-                  }}
+                  onPress={() => handleStartRoutine(routine)}
                   style={styles.startButton}
                   activeOpacity={0.85}
                 >
@@ -688,6 +731,68 @@ export default function RoutineScreen({ navigation }: any) {
             </View>
           </View>
         </TouchableWithoutFeedback>
+      </Modal>
+
+      {/* ── Active session warning modal ── */}
+      <Modal
+        animationType="fade"
+        visible={isActiveSessionWarningOpen}
+        transparent={true}
+      >
+        <View style={styles.centeredView}>
+          <View style={styles.createRoutineModalView}>
+            <BlurView
+              tint="systemUltraThinMaterialDark"
+              intensity={60}
+              style={styles.createRoutineModalBlur}
+            >
+              <View style={styles.warningIconContainer}>
+                <Ionicons
+                  name="warning-outline"
+                  size={40}
+                  color="rgba(255,75,75,0.9)"
+                />
+              </View>
+
+              <View style={styles.modalHeader}>
+                <View>
+                  <Text style={styles.modalTitle}>Sesión activa</Text>
+                  <Text style={styles.modalSubtitle}>
+                    YA TIENES UN ENTRENAMIENTO EN CURSO
+                  </Text>
+                </View>
+              </View>
+
+              <BlurCard
+                style={{ borderRadius: 20, marginBottom: 20 }}
+                contentStyle={{ padding: 20 }}
+              >
+                <Text style={{ color: t.textSecondary, fontSize: 14, lineHeight: 20 }}>
+                  Si inicias esta rutina, tu sesión actual se perderá y el
+                  cronómetro se reiniciará.
+                </Text>
+              </BlurCard>
+
+              <TouchableOpacity
+                onPress={handleConfirmStartAnyway}
+                style={styles.dangerButton}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.dangerButtonText}>
+                  Iniciar de todas formas
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={handleCancelStartAnyway}
+                style={styles.cancelButton}
+                activeOpacity={0.7}
+              >
+                <Text style={styles.cancelButtonText}>Cancelar</Text>
+              </TouchableOpacity>
+            </BlurView>
+          </View>
+        </View>
       </Modal>
 
       {isScrollable && (

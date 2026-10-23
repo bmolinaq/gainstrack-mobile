@@ -1,4 +1,4 @@
-import { createStackNavigator } from "@react-navigation/stack";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import RoutineScreen from "../../screens/RoutinesScreen";
 import EditRoutineScreen from "../../screens/EditRoutineScreen";
 import ExercisePickerScreen from "@/src/screens/ExercisePickerScreen";
@@ -7,7 +7,7 @@ import ActiveTrainingSessionScreen from "@/src/screens/ActiveTrainingSessionScre
 import TrainingSessionSummaryScreen from "@/src/screens/TrainingSessionSummaryScreen";
 import ExerciseDetailScreen from "@/src/screens/ExerciseDetailScreen";
 
-const Stack = createStackNavigator();
+const Stack = createNativeStackNavigator();
 
 export default function RoutineStackNavigator() {
   return (
@@ -30,7 +30,13 @@ export default function RoutineStackNavigator() {
       <Stack.Screen
         name="ActiveTrainingSession"
         component={ActiveTrainingSessionScreen}
-        options={{ headerShown: false }}
+        options={({ route }) => ({
+          headerShown: false,
+          gestureEnabled: false,
+          animation: (route.params as any)?.fromGymPicker
+            ? "slide_from_right"
+            : "slide_from_bottom",
+        })}
       />
       <Stack.Screen
         name="ExercisePicker"

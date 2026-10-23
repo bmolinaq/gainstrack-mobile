@@ -1,8 +1,8 @@
 import LoginScreen from "../../screens/LoginScreen";
 import RegisterScreen from "../../screens/RegisterScreen";
-import { createStackNavigator } from "@react-navigation/stack";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
-const Stack = createStackNavigator();
+const Stack = createNativeStackNavigator();
 
 export default function AuthNavigator() {
   return (

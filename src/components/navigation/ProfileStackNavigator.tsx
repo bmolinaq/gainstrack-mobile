@@ -1,10 +1,10 @@
-import { createStackNavigator } from "@react-navigation/stack";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import ProfileScreen from "../../screens/ProfileScreen";
 import GymListScreen from "../../screens/GymListScreen";
 import ExerciseListScreen from "../../screens/ExerciseListScreen";
 import ThemeScreen from "../../screens/ThemeScreen";
 
-const Stack = createStackNavigator();
+const Stack = createNativeStackNavigator();
 
 export default function ProfileStackNavigator() {
   return (

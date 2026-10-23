@@ -1,9 +1,9 @@
-import { createStackNavigator } from "@react-navigation/stack";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import HistoryScreen from "../../screens/HistoryScreen";
 import TrainingSessionDetailScreen from "../../screens/TrainingSessionDetailScreen";
 import ExerciseDetailScreen from "../../screens/ExerciseDetailScreen";
 
-const Stack = createStackNavigator();
+const Stack = createNativeStackNavigator();
 
 export default function HistoryStackNavigator() {
   return (

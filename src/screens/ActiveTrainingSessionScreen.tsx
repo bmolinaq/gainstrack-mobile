@@ -354,7 +354,7 @@ function getStyles(t: ThemeColors) {
   });
 }
 
-export default function ActiveTrainingSessionScreen({ navigation }: any) {
+export default function ActiveTrainingSessionScreen({ navigation, route }: any) {
   const t = useAppTheme();
   const styles = useMemo(() => getStyles(t), [t]);
 
@@ -407,6 +407,18 @@ export default function ActiveTrainingSessionScreen({ navigation }: any) {
     }
   }, []);
 
+  // Si entramos desde GymPicker, el stack usa el interpolator horizontal para
+  // esta transición. Al terminar la entrada, limpiamos el param para que el
+  // pop (flecha atrás / Eliminar) deslice hacia abajo (reveal-from-bottom).
+  useEffect(() => {
+    if (!route.params?.fromGymPicker) return;
+    const unsubscribe = navigation.addListener("transitionEnd", () => {
+      navigation.setParams({ fromGymPicker: undefined });
+      unsubscribe();
+    });
+    return unsubscribe;
+  }, []);
+
   useEffect(() => {
     const interval = setInterval(() => {
       setElapsedSeconds(Math.floor((Date.now() - startTimestamp!) / 1000));
@@ -434,7 +446,7 @@ export default function ActiveTrainingSessionScreen({ navigation }: any) {
   };
 
   const handleBackToMenu = () => {
-    navigation.navigate("Routines");
+    navigation.goBack();
   };
 
   const handleDeleteSession = () => {
@@ -454,10 +466,7 @@ export default function ActiveTrainingSessionScreen({ navigation }: any) {
 
   const handleConfirmDeleteSession = () => {
     clearTrainingSession();
-    navigation.reset({
-      index: 0,
-      routes: [{ name: "Routines" }],
-    });
+    navigation.goBack();
   };
 
   const handleUpdateSessionNotes = (notes: string) => {
@@ -580,7 +589,7 @@ export default function ActiveTrainingSessionScreen({ navigation }: any) {
             activeOpacity={0.8}
             onPress={handleBackToMenu}
           >
-            <Ionicons name="chevron-back" size={20} color={t.textPrimary} />
+            <Ionicons name="chevron-down" size={20} color={t.textPrimary} />
           </TouchableOpacity>
 
           <TouchableOpacity
