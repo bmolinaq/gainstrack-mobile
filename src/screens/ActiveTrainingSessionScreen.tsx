@@ -16,6 +16,7 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useFocusEffect } from "@react-navigation/native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import useActiveTrainingSessionStore from "../store/useActiveTrainingSessionStore";
 import useExercisePickerStore from "../store/useExercisePickerStore";
 import BlurCard from "../components/ui/BlurCard";
@@ -356,6 +357,7 @@ function getStyles(t: ThemeColors) {
 
 export default function ActiveTrainingSessionScreen({ navigation, route }: any) {
   const t = useAppTheme();
+  const insets = useSafeAreaInsets();
   const styles = useMemo(() => getStyles(t), [t]);
 
   const {
@@ -580,7 +582,7 @@ export default function ActiveTrainingSessionScreen({ navigation, route }: any) 
   if (activeTrainingSession === null) return null;
 
   return (
-    <View style={styles.flex}>
+    <View style={[styles.flex, { paddingTop: insets.top + 12 }]}>
       {/* Header */}
       <View style={styles.headerBar}>
         <View style={styles.headerLeftGroup}>

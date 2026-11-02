@@ -1,4 +1,5 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { Ionicons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import useAuthStore from "../../store/useAuthStore";
@@ -6,10 +7,15 @@ import AuthNavigator from "./AuthNavigator";
 import RoutineStackNavigator from "./RoutineStackNavigator";
 import HistoryStackNavigator from "./HistoryStackNavigator";
 import ProfileStackNavigator from "./ProfileStackNavigator";
+import ActiveTrainingSessionScreen from "../../screens/ActiveTrainingSessionScreen";
+import ExercisePickerScreen from "../../screens/ExercisePickerScreen";
+import ExerciseDetailScreen from "../../screens/ExerciseDetailScreen";
+import TrainingSessionSummaryScreen from "../../screens/TrainingSessionSummaryScreen";
 import { getFocusedRouteNameFromRoute } from "@react-navigation/native";
 import { useAppTheme } from "../../hooks/useAppTheme";
 
 const Tab = createBottomTabNavigator();
+const RootStack = createNativeStackNavigator();
 
 const TAB_BAR_LABEL_STYLE = {
   fontFamily: "Inter-Bold",
@@ -17,8 +23,7 @@ const TAB_BAR_LABEL_STYLE = {
   letterSpacing: 0.3,
 };
 
-export default function RootNavigator() {
-  const { token } = useAuthStore();
+function MainTabsNavigator() {
   const insets = useSafeAreaInsets();
   const t = useAppTheme();
 
@@ -30,7 +35,7 @@ export default function RootNavigator() {
     paddingBottom: 24,
   };
 
-  return token !== null ? (
+  return (
     <Tab.Navigator
       screenOptions={{
         tabBarStyle,
@@ -53,11 +58,7 @@ export default function RootNavigator() {
           ),
           tabBarStyle:
             getFocusedRouteNameFromRoute(route) === "EditRoutine" ||
-            getFocusedRouteNameFromRoute(route) === "ExercisePicker" ||
-            getFocusedRouteNameFromRoute(route) === "GymPicker" ||
-            getFocusedRouteNameFromRoute(route) === "ActiveTrainingSession" ||
-            getFocusedRouteNameFromRoute(route) === "ExerciseDetail" ||
-            getFocusedRouteNameFromRoute(route) === "TrainingSessionSummary"
+            getFocusedRouteNameFromRoute(route) === "GymPicker"
               ? { display: "none" }
               : tabBarStyle,
         })}
@@ -70,8 +71,7 @@ export default function RootNavigator() {
             <Ionicons name="time-outline" size={size} color={color} />
           ),
           tabBarStyle:
-            getFocusedRouteNameFromRoute(route) === "TrainingSessionDetail" ||
-            getFocusedRouteNameFromRoute(route) === "ExerciseDetail"
+            getFocusedRouteNameFromRoute(route) === "TrainingSessionDetail"
               ? { display: "none" }
               : tabBarStyle,
         })}
@@ -86,7 +86,60 @@ export default function RootNavigator() {
         }}
       />
     </Tab.Navigator>
-  ) : (
-    <AuthNavigator />
+  );
+}
+
+export default function RootNavigator() {
+  const { token } = useAuthStore();
+  const insets = useSafeAreaInsets();
+  const t = useAppTheme();
+
+  if (token === null) return <AuthNavigator />;
+
+  return (
+    <RootStack.Navigator screenOptions={{ headerShown: false }}>
+      <RootStack.Screen name="MainTabs" component={MainTabsNavigator} />
+      <RootStack.Screen
+        name="ActiveTrainingSession"
+        component={ActiveTrainingSessionScreen}
+        options={({ route }) => ({
+          gestureEnabled: false,
+          presentation: "fullScreenModal",
+          animation: (route.params as any)?.fromGymPicker
+            ? "slide_from_right"
+            : "slide_from_bottom",
+        })}
+      />
+      <RootStack.Screen
+        name="ExercisePicker"
+        component={ExercisePickerScreen}
+        options={{
+          contentStyle: {
+            backgroundColor: t.background,
+            paddingTop: insets.top + 12,
+          },
+        }}
+      />
+      <RootStack.Screen
+        name="ExerciseDetail"
+        component={ExerciseDetailScreen}
+        options={{
+          contentStyle: {
+            backgroundColor: t.background,
+            paddingTop: insets.top + 12,
+          },
+        }}
+      />
+      <RootStack.Screen
+        name="TrainingSessionSummary"
+        component={TrainingSessionSummaryScreen}
+        options={{
+          contentStyle: {
+            backgroundColor: t.background,
+            paddingTop: insets.top + 12,
+          },
+        }}
+      />
+    </RootStack.Navigator>
   );
 }

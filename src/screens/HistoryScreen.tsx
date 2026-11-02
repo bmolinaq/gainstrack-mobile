@@ -492,7 +492,7 @@ export default function HistoryScreen({ navigation }: any) {
 
       <ActiveSessionFAB
         onPress={() => {
-          navigation.navigate("Rutinas", { screen: "ActiveTrainingSession" });
+          navigation.navigate("ActiveTrainingSession");
         }}
       />
     </View>

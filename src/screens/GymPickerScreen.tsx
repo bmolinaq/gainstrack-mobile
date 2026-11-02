@@ -221,9 +221,13 @@ export default function GymPickerScreen({ route, navigation }: any) {
       // Se guarda preview en store junto a routineId y gymId para el save final
       setActiveTrainingSession(normalizedResponse, routineId, selectedGym.id);
 
-      // Se redirige a usuario a ActiveSessionScreen con flag para que el
-      // RoutineStackNavigator use slide horizontal en esta transición.
-      navigation.replace("ActiveTrainingSession", { fromGymPicker: true });
+      // Se abre ActiveTrainingSession en el root stack con slide horizontal, y
+      // se hace pop de GymPicker del stack Rutinas (invisible detrás del modal)
+      // para que al cerrar el modal se revele RoutinesScreen y no GymPicker.
+      navigation.getParent()?.navigate("ActiveTrainingSession", {
+        fromGymPicker: true,
+      });
+      navigation.goBack();
     } catch (error) {
       if (axios.isAxiosError(error)) {
         const apiError = error.response?.data as APIGainstrackErrorResponse;
